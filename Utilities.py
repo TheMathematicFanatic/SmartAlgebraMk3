@@ -3,19 +3,6 @@ from manim import *
 import copy
 
 
-def preserve(func):
-	# Wow this actually kinda works, but it's not great.
-	# It really needs to preserve all mobject attributes like color,
-	# opacity, stroke width, etc.
-	# I love decorators!
-	def wrapper(expr, *args, **kwargs):
-		kwargs = expr.kwargs | kwargs
-		result = func(expr, *args, **kwargs)
-		result.move_to(expr.get_center())
-		return result
-	return wrapper
-
-
 def tex(func):
 	def wrapper(expr, *args, **kwargs):
 		pretex = func(expr, *args, **kwargs)
@@ -23,6 +10,7 @@ def tex(func):
 			pretex = r" \left( " + pretex + r" \right)"
 		return pretex
 	return wrapper
+
 
 def preaddress(func):
 	def wrapper(action, expr, *args, **kwargs):
@@ -40,6 +28,7 @@ def preaddress(func):
 		#print("result_in_context:", result_in_context)
 		return result_in_context
 	return wrapper
+
 
 def add_spaces_around_brackets(input_string): #GPT
 	result = []
@@ -62,18 +51,6 @@ def add_spaces_around_brackets(input_string): #GPT
 	return ' '.join(spaced_string)
 
 
-def reset_after_anim(method): #IDK WHAT IM DOING I need a break for real. Okay, coming back later
-	def decorator(func):
-		def wrapper(mobj, scene, *args, **kwargs):
-			scene.play(func(*args, **kwargs))
-			scene.remove(mobj)
-			mobj = method(mobj)
-			scene.add(mobj)
-			return mobj
-		return wrapper
-	return decorator
-
-
 def debug_smarttex(scene, smarttex, show_indices=True, show_addresses=True, show_submobjects=True):
 	if show_indices:
 		for index in range(len(smarttex)):
@@ -94,14 +71,3 @@ def debug_smarttex(scene, smarttex, show_indices=True, show_addresses=True, show
 			scene.add(subm_number)
 			scene.play(Indicate(subm, color=BLUE))
 			scene.remove(subm_number)
-
-
-def deep_become(dst, src):
-	for attr, value in src.__dict__.items():
-		if attr == "updaters":
-			continue
-		setattr(dst, attr, copy.deepcopy(value))
-
-
-def slice_to_list(sl):
-	return list(range(sl.start, sl.end, sl.step))
