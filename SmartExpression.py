@@ -1,12 +1,13 @@
 # SmartExpression.py
 from manim import *
+from Utilities import *
 import random
 import copy
 
 
 algebra_config = {
-		"auto_parentheses": True,
-		"multiplication_mode": "dot",
+		"auto_parentheses": False,
+		"multiplication_mode": "juxtapose",
 		"division_mode": "fraction",
 	}
 
@@ -35,19 +36,20 @@ class SmartExpression(MathTex):
 				addresses.append(str(n)+child_address)
 		return addresses
 
-	def get_subex_at_address(self, address_string):
+	def get_subex(self, address_string):
 		# Returns the SmartTex object corresponding to the subexpression at the given address.
 		# Note that this is not a submobject of self! It is a different mobject probably not on screen,
 		# it was just created to help create self.
 		if address_string == "":
 			return self
 		elif int(address_string[0]) < len(self.children):
-			return self.children[int(address_string[0])].get_subex_at_address(address_string[1:])
+			return self.children[int(address_string[0])].get_subex(address_string[1:])
 		else:
 			raise IndexError(f"No subexpression of {self} at address {address_string} .")
 
 	# formerly VGroup_from_address
 	def get_vgroup_from_address(self, address, copy_if_in_list=[]):
+		print(address)
 		return VGroup(*[
 			self[0][g].copy() if g in copy_if_in_list else self[0][g]
 			for g in self.get_glyph_indices_at_address(address, return_mode=list)
@@ -64,20 +66,19 @@ class SmartExpression(MathTex):
 		subex = Smarten(subex)
 		addresses = []
 		for ad in self.get_all_addresses():
-			if self.get_subex_at_address(ad).is_identical_to(subex):
+			if self.get_subex(ad).is_identical_to(subex):
 				addresses.append(ad)
 		return addresses
 
 	def get_glyph_indices_at_address(self, address, return_mode=slice):
 		# Returns the slice or list of glyph indices corresponding to the subexpression at the given address
-		if address[-1] is "_": # gives glyphs for operations.
-			return self.get_subex_at_address(address[:-1]).get_parent_glyph_indices()
-		if address[-1] is "(":
-			...
+		if len(address) > 0 and address[-1] == "_": # gives glyphs for operations.
+			return self.get_subex(address[:-1]).get_parent_glyph_indices()
 
 		start = 0
+		parent = self
 		for n,a in enumerate(address):
-			parent = self.get_subex_at_address(address[:n])
+			parent = self.get_subex(address[:n])
 			paren_length = int(parent.parentheses) * parent.paren_length()
 			if isinstance(parent, SmartOperation):
 				start += paren_length
@@ -239,6 +240,11 @@ class SmartExpression(MathTex):
 		for from_subex, to_subex in expression_dict.items():
 			result = result.substitute_at_addresses(to_subex, result.get_addresses_of_subex(from_subex))
 		return result
+	
+	def set_color_by_subex(self, subex_color_dict):
+		for subex, color in subex_color_dict.items():
+			for ad in self.get_addresses_of_subex(Smarten(subex)):
+				self[ad].set_color(color)
 
 
 # Operation Classes
@@ -326,6 +332,8 @@ class SmartMul(SmartOperation):
 			else:
 				self.op_string = ""
 			self.op_glyph_length = 0
+		else:
+			raise ValueError("multiplication mode must be dot or juxtapose")
 		self.eval_op = lambda x,y: x*y
 		super().__init__(*children, **kwargs)
 

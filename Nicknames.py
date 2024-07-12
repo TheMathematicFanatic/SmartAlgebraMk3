@@ -1,8 +1,9 @@
-from SmartAlgebra import *
+from SmartExpression import *
+from SmartAction import *
 from Utilities import *
 
 
-SmT = SmartTex
+SmE = SmartExpression
 SmZ = SmartInteger
 SmQ = SmartRational
 SmR = SmartReal
@@ -10,7 +11,7 @@ SmAdd = SmartAdd
 SmSub = SmartSub
 SmMul = SmartMul
 SmDiv = SmartDiv
-SmExpo = SmartExpo
+SmPow = SmartPow
 SmNeg = SmartNegative
 SmVar = SmartVariable
 SmFunc = SmartFunction

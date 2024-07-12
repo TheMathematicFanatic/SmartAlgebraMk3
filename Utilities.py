@@ -20,7 +20,7 @@ def preaddress(func):
 		#print("args:", args)
 		#print("address:", address)
 		#print("kwargs:", kwargs)
-		active_part = expr.copy().get_subex_at_address(address)
+		active_part = expr.copy().get_subex(address)
 		#print("active_part:", active_part)
 		result = func(action, active_part, *args, **kwargs)
 		#print("result:", result)
@@ -61,7 +61,7 @@ def debug_smarttex(scene, smarttex, show_indices=True, show_addresses=True, show
 	if show_addresses:
 		for ad in smarttex.get_all_addresses():
 			ad_text = Text(ad, color=ORANGE).next_to(smarttex, DOWN)
-			subex_type = Text(type(smarttex.get_subex_at_address(ad)).__name__, color=ORANGE).next_to(ad_text, DOWN)
+			subex_type = Text(type(smarttex.get_subex(ad)).__name__, color=ORANGE).next_to(ad_text, DOWN)
 			scene.add(ad_text, subex_type)
 			scene.play(Indicate(smarttex[ad], color=ORANGE))
 			scene.remove(ad_text, subex_type)

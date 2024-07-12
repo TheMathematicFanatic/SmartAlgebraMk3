@@ -1,6 +1,6 @@
 # SmartAction.py
 from manim import *
-from SmartAlgebra import *
+from SmartExpression import *
 from Utilities import *
 """
 Okay I have some ideas about how to make a class that sits above the SmartExpressions.
@@ -94,7 +94,10 @@ class SmartAction:
                 active_in_glyphs += self.input_expression.get_glyph_indices_at_address(pre+entry[0], return_mode=list)
                 active_out_glyphs += self.output_expression.get_glyph_indices_at_address(pre+entry[1], return_mode=list)
 
-        # Handling Inactive Areas
+        # Removing duplicates from active glyphs
+        active_in_glyphs = list(set(active_in_glyphs))
+        active_out_glyphs = list(set(active_out_glyphs))
+        # Creating lists of inactive glyphs
         inactive_in_glyphs = [g for g in range(len(self.input_expression)) if g not in active_in_glyphs]
         inactive_out_glyphs = [g for g in range(len(self.output_expression)) if g not in active_out_glyphs]
         #debug print all four glyph lists
@@ -107,9 +110,9 @@ class SmartAction:
                 anims.append(Transform(self.input_expression[0][x], self.output_expression[0][y]))
         else:
             print("WARNING: Inactive areas not handled correctly!")
-            anims.append(TransformMatchingTex(
-                VGroup(*[self.input_expression[i] for i in inactive_in_glyphs]),
-                VGroup(*[self.output_expression[i] for i in inactive_out_glyphs])
+            anims.append(TransformMatchingShapes(
+                VGroup(*[self.input_expression[0][i] for i in inactive_in_glyphs]),
+                VGroup(*[self.output_expression[0][i] for i in inactive_out_glyphs])
             ))
         print(anims)
         return anims
@@ -120,7 +123,8 @@ class SmartAction:
     def __call__(self, input_expression, **kwargs):
         assert isinstance(input_expression, SmartExpression)
         self.accept_input(input_expression)
-        return AnimationGroup(self.generate_animation(), **kwargs)
+        animations = self.generate_animation()
+        return AnimationGroup(*animations, **kwargs)
 
     def __rshift__(self, other):
         return SequentialAction(self, other)
