@@ -52,6 +52,11 @@ def add_spaces_around_brackets(input_string): #GPT
 
 
 def debug_smarttex(scene, smarttex, show_indices=True, show_addresses=True, show_submobjects=True):
+	print("Debugging SmartExpression:")
+	print(smarttex)
+	print("Length: ", len(smarttex))
+	print("Type: ", type(smarttex))
+	print("Number of children: ", len(smarttex.children))
 	if show_indices:
 		for index in range(len(smarttex)):
 			index_text = Text(str(index), color=GREEN).next_to(smarttex, DOWN)
