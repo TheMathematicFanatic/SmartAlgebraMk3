@@ -5,7 +5,7 @@ import random
 import copy
 
 
-algebra_config = {
+global_algebra_config = {
 		"auto_parentheses": True,
 		"multiplication_mode": "juxtapose",
 		"division_mode": "fraction",
@@ -15,8 +15,9 @@ algebra_config = {
 # Main Class
 class SmartExpression(MathTex):
 	def __init__(self, parentheses=False, **kwargs):
+		self.algebra_config = global_algebra_config
 		self.parentheses = parentheses
-		if algebra_config["auto_parentheses"]:
+		if self.algebra_config["auto_parentheses"]:
 			self.auto_parentheses()
 		string = add_spaces_around_brackets(str(self))
 		super().__init__(string, **kwargs)
@@ -314,7 +315,7 @@ class SmartSub(SmartOperation):
 		return self.children[0].is_negative()
 
 class SmartMul(SmartOperation):
-	def __init__(self, *children, mode=algebra_config["multiplication_mode"], **kwargs):
+	def __init__(self, *children, mode=self.algebra_config["multiplication_mode"], **kwargs):
 		if mode=="dot":
 			self.op_string = r"\cdot"
 			self.op_glyph_length = 1
@@ -339,7 +340,7 @@ class SmartMul(SmartOperation):
 		return self.children[0].is_negative()
 
 class SmartDiv(SmartOperation):
-	def __init__(self, *children, mode=algebra_config["division_mode"], **kwargs):
+	def __init__(self, *children, mode=self.algebra_config["division_mode"], **kwargs):
 		if mode == "fraction":
 			self.op_string = r"\over"
 			self.op_glyph_length = 1
@@ -351,7 +352,7 @@ class SmartDiv(SmartOperation):
 
 	def auto_parentheses(self):
 		for child in self.children:
-			if (isinstance(child, (SmartAdd, SmartSub, SmartMul, SmartDiv)) or child.is_negative()) and algebra_config["division_mode"] == "inline":
+			if (isinstance(child, (SmartAdd, SmartSub, SmartMul, SmartDiv)) or child.is_negative()) and self.algebra_config["division_mode"] == "inline":
 				child.give_parentheses()
 			child.auto_parentheses()
 
