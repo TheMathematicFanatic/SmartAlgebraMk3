@@ -16,7 +16,6 @@ algebra_config = {
 class SmartExpression(MathTex):
 	def __init__(self, parentheses=False, **kwargs):
 		self.parentheses = parentheses
-		self.kwargs = {"parentheses": parentheses} #idea to preserve mobject kwargs like color, idk
 		if algebra_config["auto_parentheses"]:
 			self.auto_parentheses()
 		string = add_spaces_around_brackets(str(self))
@@ -48,7 +47,6 @@ class SmartExpression(MathTex):
 			raise IndexError(f"No subexpression of {self} at address {address_string} .")
 
 	def get_vgroup_from_address(self, address, copy_if_in_list=[]):
-		print(address)
 		return VGroup(*[
 			self[0][g].copy() if g in copy_if_in_list else self[0][g]
 			for g in self.get_glyph_indices_at_address(address, return_mode=list)

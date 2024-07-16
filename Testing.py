@@ -24,8 +24,7 @@ class SubexColorTest(Scene):
         self.add(Expr)
         Expr.set_color_by_subex({
             2:GREEN,
-            v:RED,
-            SmZ(1)/2:BLUE,
+            v:RED
         })
 
 
@@ -43,3 +42,15 @@ class SimpleSubexColorTest(Scene):
         self.add(C)
 
         print(C.get_addresses_of_subex(2))
+
+
+class SubexColorDemo(Scene):
+    def construct(self):
+        A = x-4
+        B = 3*x-6
+        C = x*y - (2*x**3 - y**x)
+
+        D = (A*B**(y-2))/C
+
+        self.add(D)
+        D.set_color_by_subex({x:RED,y:BLUE,2:GREEN})
