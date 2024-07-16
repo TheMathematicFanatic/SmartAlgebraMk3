@@ -24,6 +24,8 @@ class SubexColorTest(Scene):
         self.add(Expr)
         Expr.set_color_by_subex({
             2:GREEN,
+            v:RED,
+            SmZ(1)/2:BLUE,
         })
 
 
@@ -34,41 +36,10 @@ class SubexTest(Scene):
         A["1"].set_color(BLUE)
 
 
-class ComprehensionTest(Scene):
+class SimpleSubexColorTest(Scene):
     def construct(self):
-        V = VGroup(Square() for i in range(5)).arrange(RIGHT)
-        self.add(V)
-        self.wait()
+        C = SmZ(2)/2
 
+        self.add(C)
 
-class Lissjous(Scene):
-    def construct(self):
-        lcurves=VGroup(*[
-            ParametricFunction(
-            lambda t:[np.cos(a*t),np.sin(b*t),0],
-            t_range=(0,TAU,TAU/100))
-            for a in range(1,10)
-            for b in range(1,10)
-            ])
-        
-        lcurves.arrange_in_grid(rows=9  , cols=9)
-        lcurves.set_color([BLUE,YELLOW])
-        lcurves.scale(0.7)
-        self.add(lcurves)
-        return
-        self.play(Create(lcurves),run_time=6)
-        self.wait()
-        
-        dots=VGroup(*[
-            Dot(radius=0.025).move_to(curve.get_start()) for curve in lcurves])
-
-        self.play(
-            Create(lcurves,lag_ratio=0.01,run_time=3),
-            FadeIn(dots,time_span=(2,3))
-        )
-        # self.play(*(
-        #     MoveAlongPath(dot,curve)
-        #     for dot,curve in zip(dots,lcurves)
-        #     ),run_time=20,rate_func=linear)
-
-#SubexTest().render()
+        print(C.get_addresses_of_subex(2))

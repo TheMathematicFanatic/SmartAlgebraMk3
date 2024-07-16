@@ -6,7 +6,7 @@ import copy
 
 
 algebra_config = {
-		"auto_parentheses": False,
+		"auto_parentheses": True,
 		"multiplication_mode": "juxtapose",
 		"division_mode": "fraction",
 	}
@@ -47,7 +47,6 @@ class SmartExpression(MathTex):
 		else:
 			raise IndexError(f"No subexpression of {self} at address {address_string} .")
 
-	# formerly VGroup_from_address
 	def get_vgroup_from_address(self, address, copy_if_in_list=[]):
 		print(address)
 		return VGroup(*[
@@ -74,7 +73,6 @@ class SmartExpression(MathTex):
 		# Returns the slice or list of glyph indices corresponding to the subexpression at the given address
 		if len(address) > 0 and address[-1] == "_": # gives glyphs for operations.
 			return self.get_subex(address[:-1]).get_parent_glyph_indices()
-
 		start = 0
 		parent = self
 		for n,a in enumerate(address):
@@ -95,7 +93,7 @@ class SmartExpression(MathTex):
 				start += int(parent.func_parentheses)
 			else:
 				raise ValueError(f"Something has gone wrong here. Parent: {type(parent)}, {parent}, address string: {address}, n: {n}, a: {a}.")
-		end = start + len(parent)
+		end = start + len(self.get_subex(address))
 
 		if return_mode == slice:
 			return slice(start, end)
@@ -126,10 +124,7 @@ class SmartExpression(MathTex):
 		return SmartMul(self, other)
 
 	def __truediv__(self, other):
-		if isinstance(self, (SmartInteger, int)) and isinstance(other, (SmartInteger, int)):
-			return SmartRational(self, other)
-		else:
-			return SmartDiv(self, other)
+		return SmartDiv(self, other)
 
 	def __pow__(self, other):
 		return SmartPow(self, other)
@@ -166,7 +161,6 @@ class SmartExpression(MathTex):
 
 	def __matmul__(self, expression_dict):
 		return self.substitute_expressions(expression_dict)
-
 
 	def is_negative(self):
 		return False # catchall if not defined in subclasses
