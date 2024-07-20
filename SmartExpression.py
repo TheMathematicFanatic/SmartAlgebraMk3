@@ -219,7 +219,7 @@ class SmartExpression(MathTex):
 			return subex
 		new_child = self.children[int(address[0])].substitute_at_address(subex, address[1:])
 		new_children = self.children[:int(address[0])] + [new_child] + self.children[int(address[0])+1:]
-		return type(self)(*new_children, **self.kwargs)
+		return type(self)(*new_children)
 
 	def substitute_at_addresses(self, subex, addresses):
 		result = self.copy()
@@ -233,11 +233,12 @@ class SmartExpression(MathTex):
 			result = result.substitute_at_addresses(to_subex, result.get_addresses_of_subex(from_subex))
 		return result
 	
+	# to do: add argument include_parentheses to determine whether the parentheses around the subexpressions,
+	# if they exist, should also be recolored or left alone.
 	def set_color_by_subex(self, subex_color_dict):
 		for subex, color in subex_color_dict.items():
 			for ad in self.get_addresses_of_subex(Smarten(subex)):
 				self[ad].set_color(color)
-
 
 # Operation Classes
 class SmartNegative(SmartExpression):
@@ -423,7 +424,6 @@ class SmartRational(SmartNumber): #multiclassing SmartDiv is not worth the troub
 		self.a = Smarten(a)
 		self.b = Smarten(b)
 		self.children = [self.a, self.b]
-		self.kwargs = kwargs
 		super().__init__(**kwargs)
 
 	@tex
@@ -440,7 +440,8 @@ class SmartRational(SmartNumber): #multiclassing SmartDiv is not worth the troub
 		return self.a.is_negative() or self.b.is_negative()
 
 	def convert_to_smartdiv(self):
-		return SmartDiv(self.a, self.b, **self.kwargs)
+		return SmartDiv(self.a, self.b)
+
 
 class SmartReal(SmartNumber):
 	def __init__(self, x, **kwargs):

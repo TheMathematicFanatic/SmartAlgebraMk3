@@ -54,3 +54,20 @@ class SubexColorDemo(Scene):
 
         self.add(D)
         D.set_color_by_subex({x:RED,y:BLUE,2:GREEN})
+
+
+class Interactive(Scene):
+    def construct(self):
+        A = x+2
+
+        self.add(A)
+        
+        self.interactive_embed()
+
+        self.wait()
+
+
+class ExpGraphTest(Scene):
+    def construct(self):
+        A = 3*(x+4)**2+5*y
+        self.add(A.to_graph_tree())
